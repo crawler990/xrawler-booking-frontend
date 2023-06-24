@@ -1,9 +1,8 @@
 import React, { Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { CContainer, CSpinner } from '@coreui/react'
-
-// routes config
 import routes from '../routes'
+import AuthService from 'src/services/AuthService'
 
 const AppContent = () => {
   return (
@@ -14,16 +13,31 @@ const AppContent = () => {
             return (
               route.element && (
                 <Route
-                  key={idx}
                   path={route.path}
                   exact={route.exact}
+                  key={idx}
                   name={route.name}
-                  element={<route.element />}
+                  element={
+                    AuthService.validateToken() ? (
+                      <route.element />
+                    ) : (
+                      <Navigate to="/login" replace />
+                    )
+                  }
                 />
               )
             )
           })}
-          <Route path="/" element={<Navigate to="dashboard" replace />} />
+          <Route
+            path="/"
+            element={
+              AuthService.validateToken() ? (
+                <Navigate to="dashboard" replace />
+              ) : (
+                <Navigate to="login" replace />
+              )
+            }
+          />
         </Routes>
       </Suspense>
     </CContainer>

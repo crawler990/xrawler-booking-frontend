@@ -1,0 +1,14 @@
+.login{
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+.login form{
+    display: grid;
+    padding: 150px;
+    padding-top: 200px;
+}
+
+.login img{
+    width: 100%;
+}
