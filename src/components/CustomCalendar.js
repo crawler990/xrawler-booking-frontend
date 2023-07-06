@@ -11,7 +11,10 @@ function CustomCalendar({ calendarData, clearCalendar, resetCalendar, events }) 
   const handleSelectSlot = (slotInfo) => {
     const { start, end } = slotInfo
     const selectedSlot = { start, end }
-    if (!selectedSlots.find((x) => moment(x.start).isSame(selectedSlot.start))) {
+    if (
+      !selectedSlots.find((x) => moment(x.start).isSame(selectedSlot.start)) &&
+      !events.find((x) => moment(x.start).isSame(selectedSlot.start))
+    ) {
       setSelectedSlots((prevSelectedSlots) => [...prevSelectedSlots, selectedSlot])
     }
   }

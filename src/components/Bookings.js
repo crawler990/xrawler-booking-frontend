@@ -14,7 +14,7 @@ import { backendURL } from 'src/app.constants'
 import axios from 'axios'
 import AuthService from 'src/services/AuthService'
 import CIcon from '@coreui/icons-react'
-import { cilDelete, cilPen } from '@coreui/icons'
+import { cilDelete } from '@coreui/icons'
 import moment from 'moment'
 
 function Bookings() {

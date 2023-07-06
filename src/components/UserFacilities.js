@@ -17,6 +17,7 @@ import {
   CModalBody,
   CModalFooter,
   CModalTitle,
+  CSpinner,
 } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 import AuthService from 'src/services/AuthService'
@@ -27,10 +28,11 @@ import tennis from '../assets/images/tennis.jpg'
 import badminton from '../assets/images/badminton.jpg'
 import AllFacilities from './AllFacilities'
 import ViewFacility from './ViewFacility'
+import { Buffer } from 'buffer'
+import arena1 from '../assets/images/arena1.jpg'
 
 function UserFacilities() {
   const [facilities, setFacilities] = useState([])
-  const [images, setImages] = useState([])
   const [error, setErrorMessage] = useState()
   const [facilityData, showFacility] = useState()
   const [remove, showDelete] = useState()
@@ -92,19 +94,8 @@ function UserFacilities() {
           ) : (
             facilities.map((facility) => {
               return (
-                <CCard
-                  style={{ width: '30rem', cursor: 'pointer' }}
-                  key={facility._id}
-                  className="col-6 m-2"
-                >
-                  <CCarousel controls dark transition="crossfade" interval={10000}>
-                    <CCarouselItem>
-                      <CImage className="d-block w-100" src={tennis} alt="slide 1" />
-                    </CCarouselItem>
-                    <CCarouselItem>
-                      <CImage className="d-block w-100" src={badminton} alt="slide 2" />
-                    </CCarouselItem>
-                  </CCarousel>
+                <CCard style={{ width: '30rem' }} key={facility._id} className="col-6 m-2">
+                  <CImage className="d-block w-100" src={arena1} alt="image" />
                   <CCardBody>
                     <div className="d-flex justify-content-between">
                       <CCardTitle>{facility.name}</CCardTitle>
@@ -113,6 +104,7 @@ function UserFacilities() {
                           color="primary"
                           className="mx-3"
                           size="sm"
+                          style={{ cursor: 'pointer' }}
                           onClick={() => showFacility(facility)}
                         >
                           View

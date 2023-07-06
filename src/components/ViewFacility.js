@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import {
   CCard,
   CCardBody,
@@ -19,10 +19,9 @@ import {
   CModalTitle,
   CForm,
   CFormInput,
+  CSpinner,
 } from '@coreui/react'
 import 'react-datepicker/dist/react-datepicker.css'
-import tennis from '../assets/images/tennis.jpg'
-import badminton from '../assets/images/badminton.jpg'
 import AuthService from 'src/services/AuthService'
 import axios from 'axios'
 import { backendURL } from 'src/app.constants'
@@ -32,20 +31,18 @@ import moment from 'moment'
 import CIcon from '@coreui/icons-react'
 import { cilArrowThickFromTop, cilX } from '@coreui/icons'
 import mpesa from '../assets/images/mpesa.png'
+import { Buffer } from 'buffer'
+import { useNavigate } from 'react-router-dom'
+
+export const getFileData = (data) => {
+  const fileBuffer = Buffer.from(data)
+  const fileData = fileBuffer.toString('base64')
+  return fileData
+}
 
 function ViewFacility({ facility, user }) {
-  const [formData, setFormData] = useState({
-    _id: facility?._id ? facility._id : '',
-    name: facility?.name ? facility.name : '',
-    capacity: facility?.capacity ? facility.capacity : 0,
-    location: facility?.location ? facility.location : '',
-    type: facility?.type ? facility.type : '',
-    description: facility?.description ? facility.description : '',
-    file: null,
-  })
   const [validated, setValidated] = useState(false)
   const [response, setResponse] = useState({ success: '', error: '' })
-  const [startDate, setStartDate] = useState(new Date())
   const [calendarData, setCalendarData] = useState([])
   const [subTotal, setSubTotal] = useState(0)
   const [viewMap, setViewMap] = useState(false)
@@ -54,6 +51,8 @@ function ViewFacility({ facility, user }) {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [events, setEvents] = useState([])
   const options = AuthService.setHeaders()
+  const [images, setImages] = useState([])
+  const navigate = useNavigate()
 
   const processPayment = () => {
     axios
@@ -63,7 +62,7 @@ function ViewFacility({ facility, user }) {
         options,
       )
       .then((response) => {
-        console.log(response.data)
+        console.log('resmpesa', response.data)
         addBooking()
       })
       .catch((error) => console.log(error))
@@ -78,6 +77,8 @@ function ViewFacility({ facility, user }) {
       )
       .then((response) => {
         console.log(response.data)
+        setResponse({ success: 'Successfully booked facility', error: '' })
+        navigate('/bookings/user')
       })
       .catch((error) => console.log(error))
   }
@@ -97,8 +98,16 @@ function ViewFacility({ facility, user }) {
       .get(backendURL + `/bookings/facility/${facility._id}`, options)
       .then((response) => {
         const data = response.data.map((item) => item.dates).flat()
-        console.log(data)
-        setEvents(data)
+        data.length > 0 && setEvents(data)
+      })
+      .catch((error) => console.log(error.response.data.message))
+  })
+
+  useEffect(() => {
+    axios
+      .get(backendURL + `/getfiles/${facility._id}`, options)
+      .then((response) => {
+        setImages(response.data)
       })
       .catch((error) => console.log(error.response.data.message))
   })
@@ -108,6 +117,11 @@ function ViewFacility({ facility, user }) {
       {response.error && (
         <CAlert color="danger" dismissible onClose={() => setResponse({ error: '' })}>
           {response.error}
+        </CAlert>
+      )}
+      {response.success && (
+        <CAlert color="success" dismissible onClose={() => setResponse({ error: '' })}>
+          {response.success}
         </CAlert>
       )}
       <CModal
@@ -143,27 +157,48 @@ function ViewFacility({ facility, user }) {
                     Send
                   </CButton>
                 </CCol>
-                <CCol xs={12} className="d-flex justify-content-center my-5">
-                  <CButton color="primary" onClick={processPayment}>
-                    Confirm Payment
-                  </CButton>
-                </CCol>
               </CForm>
             </CCardBody>
           </CCard>
         </CModalBody>
         <CModalFooter></CModalFooter>
       </CModal>
-      <div className="col-8">
-        <CCard>
-          <CCarousel controls dark indicators interval={10000}>
-            <CCarouselItem>
-              <CImage className="d-block w-100" src={tennis} alt="slide 1" />
-            </CCarouselItem>
-            <CCarouselItem>
-              <CImage className="d-block w-100" src={badminton} alt="slide 2" />
-            </CCarouselItem>
-          </CCarousel>
+      <div className={user ? 'col-12' : 'col-8'}>
+        <CCard style={{ width: '100%' }}>
+          {images.length === 0 ? (
+            <div className="d-flex justify-content-center my-5">
+              <CSpinner color="primary" />
+            </div>
+          ) : (
+            <CCarousel controls indicators interval={10000}>
+              {images.map((file) => {
+                return (
+                  <CCarouselItem key={file._id}>
+                    <CImage
+                      className="d-block w-100"
+                      src={`data:${file.contentType};base64,${getFileData(file.data.data)}`}
+                      alt=""
+                    />
+                  </CCarouselItem>
+                )
+              })}
+            </CCarousel>
+          )}
+          {/* <Suspense fallback={<CSpinner color="primary" />}>
+            <CCarousel controls light indicators interval={10000}>
+              {images.map((file) => {
+                return (
+                  <CCarouselItem key={file._id}>
+                    <CImage
+                      className="d-block w-100"
+                      src={`data:${file.contentType};base64,${getFileData(file.data.data)}`}
+                      alt=""
+                    />
+                  </CCarouselItem>
+                )
+              })}
+            </CCarousel>
+          </Suspense> */}
           <CCardBody>
             <CCardTitle>{facility.name}</CCardTitle>
           </CCardBody>
@@ -186,6 +221,12 @@ function ViewFacility({ facility, user }) {
               <span style={{ fontWeight: 500 }}>
                 {facility.currency} {facility.cost} per hour
               </span>
+            </CListGroupItem>
+            <CListGroupItem>
+              Contact: <span style={{ fontWeight: 500 }}> {facility.contact} </span>
+            </CListGroupItem>
+            <CListGroupItem>
+              Owner(s): <span style={{ fontWeight: 500 }}> {facility.owner.username} </span>
             </CListGroupItem>
           </CListGroup>
           <h6

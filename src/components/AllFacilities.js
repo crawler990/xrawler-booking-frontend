@@ -8,10 +8,10 @@ import {
   CCarousel,
   CCarouselItem,
   CImage,
+  CButton,
 } from '@coreui/react'
 import 'react-datepicker/dist/react-datepicker.css'
-import tennis from '../assets/images/tennis.jpg'
-import badminton from '../assets/images/badminton.jpg'
+import arena1 from '../assets/images/arena1.jpg'
 import ViewFacility from './ViewFacility'
 
 function AllFacilities({ facilities, filteredFacilities, viewFacility }) {
@@ -19,29 +19,27 @@ function AllFacilities({ facilities, filteredFacilities, viewFacility }) {
 
   const view = (facility) => {
     return (
-      <CCard
-        style={{ width: '20rem', cursor: 'pointer' }}
-        className="col-3 m-2"
-        key={facility._id}
-        onClick={() => {
-          showFacilityDetails(facility)
-          viewFacility()
-        }}
-      >
-        <CCarousel controls dark interval={10000}>
-          <CCarouselItem>
-            <CImage className="d-block w-100" src={tennis} alt="slide 1" />
-          </CCarouselItem>
-          <CCarouselItem>
-            <CImage className="d-block w-100" src={badminton} alt="slide 2" />
-          </CCarouselItem>
-        </CCarousel>
+      <CCard style={{ width: '20rem' }} className="col-3 m-2" key={facility._id}>
+        <CImage className="d-block w-100" src={arena1} alt="slide 2" />
         <CCardBody>
-          <CCardTitle>{facility.name}</CCardTitle>
+          <div className="d-flex justify-content-between">
+            <CCardTitle>{facility.name}</CCardTitle>
+            <CButton
+              color="primary"
+              size="sm"
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                showFacilityDetails(facility)
+                viewFacility()
+              }}
+            >
+              View
+            </CButton>
+          </div>
         </CCardBody>
         <CListGroup flush>
           <CListGroupItem style={{ fontSize: '13px' }}>
-            {facility.description ? facility.description : 'Description - '}
+            {facility.description ? facility.description.slice(0, 200) + '...' : 'Description - '}
           </CListGroupItem>
           <CListGroupItem>
             Capacity:

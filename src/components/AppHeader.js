@@ -9,12 +9,13 @@ import {
   CHeaderToggler,
   CNavLink,
   CNavItem,
+  CAvatar,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilAccountLogout, cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
-
 import { AppBreadcrumb } from './index'
 import BackButton from './BackButton'
+import avatar8 from '../assets/images/avatar8.png'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
@@ -41,7 +42,7 @@ const AppHeader = () => {
           <CNavItem>
             <BackButton />
           </CNavItem>
-          <CNavItem>
+          {/* <CNavItem>
             <CNavLink href="#">
               <CIcon icon={cilBell} size="lg" />
             </CNavLink>
@@ -55,6 +56,14 @@ const AppHeader = () => {
             <CNavLink href="#">
               <CIcon icon={cilEnvelopeOpen} size="lg" />
             </CNavLink>
+          </CNavItem> */}
+          <CNavItem className="mx-3">
+            <CAvatar
+              src={avatar8}
+              size="md"
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate('/user/profile')}
+            />
           </CNavItem>
           <CNavItem>
             <CNavLink>

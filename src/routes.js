@@ -5,6 +5,7 @@ const AddFacility = React.lazy(() => import('./components/AddFacility'))
 const UserFacilities = React.lazy(() => import('./components/UserFacilities'))
 const AddBooking = React.lazy(() => import('./components/AddBooking'))
 const Bookings = React.lazy(() => import('./components/Bookings'))
+const Profile = React.lazy(() => import('./components/Profile'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -13,6 +14,7 @@ const routes = [
   { path: '/facilities/user', name: 'User Facilities', element: UserFacilities },
   { path: '/bookings/new', name: 'Bookings', element: AddBooking },
   { path: '/bookings/user', name: 'Bookings', element: Bookings },
+  { path: '/user/profile', name: 'Profile', element: Profile },
 ]
 
 export default routes

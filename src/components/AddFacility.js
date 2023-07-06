@@ -1,10 +1,18 @@
 import React, { useState } from 'react'
-import { CAlert, CButton, CCol, CForm, CFormInput, CFormSelect, CFormTextarea } from '@coreui/react'
+import {
+  CAlert,
+  CButton,
+  CCol,
+  CForm,
+  CFormInput,
+  CFormSelect,
+  CFormTextarea,
+  CImage,
+} from '@coreui/react'
 import axios from 'axios'
 import { backendURL } from '../app.constants'
 import AuthService from 'src/services/AuthService'
-import { AddressAutofill, SearchBox } from '@mapbox/search-js-react'
-import { currencies } from 'src/assets/curencies'
+import { AddressAutofill } from '@mapbox/search-js-react'
 
 const facilities = ['...', 'Football', 'Basketball', 'Tennis', 'Swimming', 'Badminton', 'Cricket']
 
@@ -18,8 +26,9 @@ function AddFacility({ facility }) {
     currency: facility?.currency ? facility.currency : '',
     location: facility?.location ? facility.location : '',
     coordinates: facility?.coordinates ? facility.coordinates : '',
+    contact: facility?.contact ? facility.contact : '',
     description: facility?.description ? facility.description : '',
-    file: null,
+    files: null,
     parentId: null,
   })
   const [validated, setValidated] = useState(false)
@@ -31,49 +40,35 @@ function AddFacility({ facility }) {
     const form = event.currentTarget
 
     if (form.checkValidity() === true) {
-      const [latitude, longitude] = formData.coordinates.split(',').map(parseFloat)
-      formData.coordinates = { latitude, longitude }
-      axios
-        .post(backendURL + '/facilities', formData, options)
-        .then((response) => {
-          console.log(response)
-          const token = localStorage.getItem('token')
-          const sendData = new FormData()
-          const file = {
-            file: formData.file,
-            parentId: response._id,
-          }
-          sendData.append('file', file.file)
-          sendData.append('parentId', response.data._id)
+      if (formData.coordinates) {
+        const [latitude, longitude] = formData.coordinates.split(',').map(parseFloat)
+        formData.coordinates = { latitude, longitude }
+      }
+      axios.post(backendURL + '/facilities', formData, options).then((response) => {
+        setResponse({ success: 'Successfully added new facility', error: '' })
+        const token = localStorage.getItem('token')
 
-          console.log(sendData)
+        const sendData = new FormData()
 
-          setResponse({ success: 'Successfully added new facility', error: '' })
+        for (const file of formData.files) {
+          sendData.append('file', file)
+        }
+        sendData.append('parentId', response.data._id)
 
-          return axios
-            .post(backendURL + '/upload', sendData, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
-              },
-            })
-            .then((response) => {
-              console.log('Image uploaded successfully', response.data)
-            })
-            .catch((error) => {
-              console.error('Image upload failed', error)
-            })
-
-          setFormData((prevdata) => ({
-            ...prevdata,
-            name: '',
-            capacity: 0,
-            location: '',
-            type: '',
-            description: '',
-          }))
-        })
-        .catch((error) => setResponse({ success: '', error: error.response.data.message }))
+        return axios
+          .post(backendURL + '/upload', sendData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then((response) => {
+            console.log('Image uploaded successfully', response.data)
+          })
+          .catch((error) => {
+            console.error('Image upload failed', error)
+          })
+      })
     }
     setValidated(true)
   }
@@ -123,7 +118,7 @@ function AddFacility({ facility }) {
           <CFormInput
             type="number"
             id="capacity"
-            label="Capacity"
+            label="Max Capacity"
             required
             feedbackValid="Looks good!"
             feedbackInvalid="Please provide a value"
@@ -195,7 +190,19 @@ function AddFacility({ facility }) {
             onChange={(e) => {
               setFormData((prevdata) => ({ ...prevdata, coordinates: e.target.value }))
             }}
-            value={formData.coordinates}
+            value={[formData.coordinates.latitude, formData.coordinates.longitude]}
+          />
+        </CCol>
+        <CCol xs={4}>
+          <CFormInput
+            id="contact"
+            label="Contact"
+            feedbackValid="Looks good!"
+            feedbackInvalid="Please provide a location"
+            onChange={(e) => {
+              setFormData((prevdata) => ({ ...prevdata, contact: e.target.value }))
+            }}
+            value={formData.contact}
           />
         </CCol>
         <CCol xs={12}>
@@ -216,9 +223,11 @@ function AddFacility({ facility }) {
             id="file"
             label="Images"
             multiple
-            onChange={(e) => setFormData((prevdata) => ({ ...prevdata, file: e.target.files[0] }))}
+            onChange={(e) => setFormData((prevdata) => ({ ...prevdata, files: e.target.files }))}
           />
         </CCol>
+        {/* {ima} */}
+        {/* <CImage src={}/> */}
         <CCol xs={12}>
           {facility?.name ? (
             <CButton onClick={editFacility}>{facility?.name && 'Save'}</CButton>
