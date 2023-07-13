@@ -5,48 +5,50 @@ import {
   CCarouselItem,
   CImage,
   CCol,
-  CWidgetStatsE,
-  CDropdownMenu,
-  CDropdownItem,
   CRow,
-  CDropdown,
-  CDropdownToggle,
-  CLink,
   CCardHeader,
   CCardBody,
   CTable,
   CTableHead,
   CTableRow,
   CTableHeaderCell,
-  CTableDataCell,
   CTableBody,
-  CProgress,
-  CAvatar,
+  CButton,
 } from '@coreui/react'
-import { CChartBar, CChartLine } from '@coreui/react-chartjs'
+import { CChartBar } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
-import { cilOptions, cilArrowTop, cilArrowRight, cilChartPie, cilPeople } from '@coreui/icons'
-import swimming from '../assets/images/swimming.jpg'
-import tennis from '../assets/images/tennis.jpg'
-import badminton from '../assets/images/badminton.jpg'
+import { cilPeople } from '@coreui/icons'
 import bg1 from '../assets/images/bg1.jpg'
 import bg2 from '../assets/images/bg2.jpg'
 import '../css/Dashboard.css'
+import axios from 'axios'
+import { backendURL } from 'src/app.constants'
+import AuthService from 'src/services/AuthService'
 
 const Dashboard = () => {
+  const options = AuthService.setHeaders()
+
+  const generateReport = () => {
+    axios
+      .get(backendURL + '/reports', options)
+      .then((response) => {
+        const uint8Array = new Uint8Array(response.data.data)
+
+        const blob = new Blob([uint8Array], { type: 'application/pdf' })
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = 'report'
+        link.click()
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
   return (
     <>
-      <div className="carousel">
+      <div className="carousel" style={{ height: '100vh' }}>
         <CCarousel controls indicators dark interval={7000}>
-          <CCarouselItem>
-            <CImage className="d-block w-100" src={tennis} alt="slide 1" />
-          </CCarouselItem>
-          <CCarouselItem>
-            <CImage className="d-block w-100" src={swimming} alt="slide 2" />
-          </CCarouselItem>
-          <CCarouselItem>
-            <CImage className="d-block w-100" src={badminton} alt="slide 2" />
-          </CCarouselItem>
           <CCarouselItem>
             <CImage className="d-block w-100" src={bg1} alt="slide 2" />
           </CCarouselItem>
@@ -69,8 +71,8 @@ const Dashboard = () => {
         </CCard> */}
 
         <CCol xs={12}>
-          <CCard className="mb-4">
-            <CCardHeader>Bar Chart</CCardHeader>
+          <CCard className="my-3">
+            <CCardHeader>Bookings</CCardHeader>
             <CCardBody>
               <CChartBar
                 data={{
@@ -91,6 +93,40 @@ const Dashboard = () => {
                   datasets: [
                     {
                       label: 'Bookings',
+                      backgroundColor: '#f87979',
+                      data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
+                    },
+                  ],
+                }}
+                labels="months"
+              />
+            </CCardBody>
+          </CCard>
+        </CCol>
+
+        <CCol xs={12}>
+          <CCard className="my-3">
+            <CCardHeader>Payments</CCardHeader>
+            <CCardBody>
+              <CChartBar
+                data={{
+                  labels: [
+                    'January',
+                    'February',
+                    'March',
+                    'April',
+                    'May',
+                    'June',
+                    'July',
+                    'August',
+                    'September',
+                    'October',
+                    'November',
+                    'December',
+                  ],
+                  datasets: [
+                    {
+                      label: 'Payments',
                       backgroundColor: '#f87979',
                       data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
                     },
@@ -156,6 +192,10 @@ const Dashboard = () => {
               </CTableBody>
             </CTable>
           </CCard>
+        </CCol>
+
+        <CCol xs={12} className="my-3">
+          <CButton onClick={generateReport}>Generate Report</CButton>
         </CCol>
       </CRow>
     </>

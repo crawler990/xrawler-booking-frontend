@@ -28,7 +28,7 @@ function AddBooking({ booking }) {
         setFacilities(response.data)
       })
       .catch((error) => setResponse({ success: '', error: error.response.data.message }))
-  })
+  }, [])
 
   const viewFacility = () => {
     setSearch(false)

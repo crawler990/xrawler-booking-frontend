@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CCard,
   CCardBody,
@@ -48,10 +48,12 @@ function ViewFacility({ facility, user }) {
   const [viewMap, setViewMap] = useState(false)
   const [clearCalendar, setClearCalendar] = useState(false)
   const [pay, setPay] = useState(false)
+  const [spinner, setSpinner] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState('')
   const [events, setEvents] = useState([])
   const options = AuthService.setHeaders()
   const [images, setImages] = useState([])
+  const [callBack, setCallBack] = useState()
   const navigate = useNavigate()
 
   const processPayment = () => {
@@ -62,13 +64,34 @@ function ViewFacility({ facility, user }) {
         options,
       )
       .then((response) => {
-        console.log('resmpesa', response.data)
-        addBooking()
+        setCallBack(response.data)
+        console.log(response.data)
       })
       .catch((error) => console.log(error))
   }
 
+  useEffect(() => {
+    if (callBack) {
+      axios
+        .get(
+          backendURL + '/mpesa/gettransaction/' + callBack,
+          { phoneNumber: phoneNumber, amount: subTotal },
+          options,
+        )
+        .then((response) => {
+          console.log(response.data)
+          if (response.data.resultCode === '0') {
+            addBooking()
+          } else {
+            setResponse({ success: '', error: 'Payment not made successfully, try again' })
+          }
+        })
+        .catch((error) => console.log(error))
+    }
+  })
+
   const addBooking = () => {
+    console.log('bookingcurrently')
     axios
       .post(
         backendURL + '/bookings',
@@ -77,8 +100,9 @@ function ViewFacility({ facility, user }) {
       )
       .then((response) => {
         console.log(response.data)
+        setPay(false)
         setResponse({ success: 'Successfully booked facility', error: '' })
-        navigate('/bookings/user')
+        setCallBack(null)
       })
       .catch((error) => console.log(error))
   }
@@ -114,19 +138,12 @@ function ViewFacility({ facility, user }) {
 
   return (
     <div className="row">
-      {response.error && (
-        <CAlert color="danger" dismissible onClose={() => setResponse({ error: '' })}>
-          {response.error}
-        </CAlert>
-      )}
-      {response.success && (
-        <CAlert color="success" dismissible onClose={() => setResponse({ error: '' })}>
-          {response.success}
-        </CAlert>
-      )}
       <CModal
         visible={pay ? true : false}
-        onClose={() => setPay(false)}
+        onClose={() => {
+          setPay(false)
+          setSpinner(false)
+        }}
         size="lg"
         backdrop="static"
       >
@@ -153,10 +170,17 @@ function ViewFacility({ facility, user }) {
                   />
                 </CCol>
                 <CCol xs={12}>
-                  <CButton color="primary" onClick={processPayment}>
+                  <CButton
+                    color="primary"
+                    onClick={() => {
+                      processPayment()
+                      setSpinner(true)
+                    }}
+                  >
                     Send
                   </CButton>
                 </CCol>
+                <CCol xs={12}>{spinner && <CSpinner color="primary" />}</CCol>
               </CForm>
             </CCardBody>
           </CCard>
@@ -164,6 +188,16 @@ function ViewFacility({ facility, user }) {
         <CModalFooter></CModalFooter>
       </CModal>
       <div className={user ? 'col-12' : 'col-8'}>
+        {response.error && (
+          <CAlert color="danger" dismissible onClose={() => setResponse({ error: '' })}>
+            {response.error}
+          </CAlert>
+        )}
+        {response.success && (
+          <CAlert color="success" dismissible onClose={() => setResponse({ error: '' })}>
+            {response.success}
+          </CAlert>
+        )}
         <CCard style={{ width: '100%' }}>
           {images.length === 0 ? (
             <div className="d-flex justify-content-center my-5">

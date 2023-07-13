@@ -22,7 +22,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import AuthService from 'src/services/AuthService'
 import CIcon from '@coreui/icons-react'
-import { cilDelete, cilPen } from '@coreui/icons'
+import { cilTrash, cilPen } from '@coreui/icons'
 import AddFacility from './AddFacility'
 import tennis from '../assets/images/tennis.jpg'
 import badminton from '../assets/images/badminton.jpg'
@@ -110,7 +110,7 @@ function UserFacilities() {
                           View
                         </CButton>
                         <CIcon
-                          icon={cilDelete}
+                          icon={cilTrash}
                           style={{ cursor: 'pointer' }}
                           onClick={() => showDelete(facility)}
                         />

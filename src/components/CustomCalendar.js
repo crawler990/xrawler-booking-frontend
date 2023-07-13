@@ -52,7 +52,7 @@ function CustomCalendar({ calendarData, clearCalendar, resetCalendar, events }) 
         events={myEventsList}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500, width: 800, cursor: 'pointer' }}
+        style={{ height: 500, width: 900, cursor: 'pointer' }}
         views={['month', 'week', 'day']}
         defaultView="week"
         selectable={true}

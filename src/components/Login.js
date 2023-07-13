@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { CAlert } from '@coreui/react'
+import { CAlert, CImage } from '@coreui/react'
 import showcase from '../assets/images/showcase.jpg'
 import '../css/Login.css'
 import AuthService from 'src/services/AuthService'
 import { useNavigate } from 'react-router-dom'
+import logo from '../assets/images/x-logo.png'
 
 function Login() {
   const [credentials, setCredentials] = useState({ username: '', email: '', password: '' })
@@ -42,6 +43,11 @@ function Login() {
               {loginError}
             </CAlert>
           )}
+          <CImage
+            src={logo}
+            alt=""
+            style={{ width: '250px', marginLeft: '380px', marginTop: '100px' }}
+          />
           {view === 'login' ? (
             <form onSubmit={login}>
               <div className="mb-3">

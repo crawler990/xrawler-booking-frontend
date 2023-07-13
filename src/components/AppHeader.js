@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -12,15 +12,30 @@ import {
   CAvatar,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilAccountLogout, cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
+import { cilAccountLogout, cilMenu } from '@coreui/icons'
 import { AppBreadcrumb } from './index'
 import BackButton from './BackButton'
 import avatar8 from '../assets/images/avatar8.png'
+import { getFileData } from './ViewFacility'
+import { backendURL } from 'src/app.constants'
+import AuthService from 'src/services/AuthService'
+import axios from 'axios'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const navigate = useNavigate()
+  const [profilePhoto, setProfilePhoto] = useState()
+  const options = AuthService.setHeaders()
+
+  useEffect(() => {
+    axios
+      .get(backendURL + '/profilephoto', options)
+      .then((response) => {
+        setProfilePhoto(response.data)
+      })
+      .catch((error) => console.log(error))
+  }, [])
 
   return (
     <CHeader position="sticky" className="mb-4">
@@ -59,9 +74,17 @@ const AppHeader = () => {
           </CNavItem> */}
           <CNavItem className="mx-3">
             <CAvatar
-              src={avatar8}
+              src={
+                profilePhoto
+                  ? `data:${profilePhoto.contentType};base64,${getFileData(profilePhoto.data.data)}`
+                  : avatar8
+              }
               size="md"
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                borderRadius: '50%',
+                objectFit: 'cover',
+              }}
               onClick={() => navigate('/user/profile')}
             />
           </CNavItem>

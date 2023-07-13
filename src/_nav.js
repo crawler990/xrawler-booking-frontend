@@ -33,13 +33,13 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Book',
+        name: 'Book Now',
         to: '/bookings/new',
         icon: <CIcon icon={cilInput} customClassName="nav-icon" />,
       },
       {
         component: CNavItem,
-        name: 'Past Bookings',
+        name: 'My Past Bookings',
         to: '/bookings/user',
         icon: <CIcon icon={cilClock} customClassName="nav-icon" />,
       },

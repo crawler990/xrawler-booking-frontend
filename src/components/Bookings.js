@@ -14,7 +14,7 @@ import { backendURL } from 'src/app.constants'
 import axios from 'axios'
 import AuthService from 'src/services/AuthService'
 import CIcon from '@coreui/icons-react'
-import { cilDelete } from '@coreui/icons'
+import { cilDelete, cilTrash } from '@coreui/icons'
 import moment from 'moment'
 
 function Bookings() {
@@ -25,19 +25,20 @@ function Bookings() {
     axios
       .get(backendURL + '/bookings/user', options)
       .then((response) => {
+        console.log(response.data)
         setBookings(response.data)
-      })
+      }, [])
       .catch()
   }, [])
 
-  const handleDelete = (id) => {
-    axios
-      .delete(backendURL + `/bookings/${id}`, options)
-      .then((response) => {
-        console.log(response.data)
-      })
-      .catch()
-  }
+  // const handleDelete = (id) => {
+  //   axios
+  //     .delete(backendURL + `/bookings/${id}`, options)
+  //     .then((response) => {
+  //       console.log(response.data)
+  //     })
+  //     .catch()
+  // }
 
   return (
     <>
@@ -51,7 +52,7 @@ function Bookings() {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {bookings &&
+            {bookings.length > 0 &&
               bookings.map((booking) => {
                 return (
                   <CTableRow key={booking._id}>
@@ -71,14 +72,14 @@ function Bookings() {
                     <CTableDataCell>
                       <strong>{booking.subTotal}</strong>
                     </CTableDataCell>
-                    <CTableDataCell>
+                    {/* <CTableDataCell>
                       <CIcon
-                        icon={cilDelete}
+                        icon={cilTrash}
                         size="lg"
                         style={{ cursor: 'pointer' }}
-                        onClick={handleDelete(booking._id)}
+                        // onClick={handleDelete(booking._id)}
                       />
-                    </CTableDataCell>
+                    </CTableDataCell> */}
                   </CTableRow>
                 )
               })}

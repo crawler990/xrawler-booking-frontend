@@ -190,7 +190,12 @@ function AddFacility({ facility }) {
             onChange={(e) => {
               setFormData((prevdata) => ({ ...prevdata, coordinates: e.target.value }))
             }}
-            value={[formData.coordinates.latitude, formData.coordinates.longitude]}
+            value={
+              formData.coordinates.latitude && [
+                formData.coordinates.latitude,
+                formData.coordinates.longitude,
+              ]
+            }
           />
         </CCol>
         <CCol xs={4}>
