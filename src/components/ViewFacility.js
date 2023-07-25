@@ -100,8 +100,8 @@ function ViewFacility({ facility, user }) {
       )
       .then((response) => {
         console.log(response.data)
-        setPay(false)
         setResponse({ success: 'Successfully booked facility', error: '' })
+        setPay(false)
         setCallBack(null)
       })
       .catch((error) => console.log(error))
@@ -121,11 +121,19 @@ function ViewFacility({ facility, user }) {
     axios
       .get(backendURL + `/bookings/facility/${facility._id}`, options)
       .then((response) => {
-        const data = response.data.map((item) => item.dates).flat()
-        data.length > 0 && setEvents(data)
+        if (response.data.length > 0) {
+          const data = response.data.map((item) => item.dates).flat()
+          const title = response.data[0].by.username
+          data.map((date) => {
+            date.start = moment(date.start).toDate()
+            date.end = moment(date.end).toDate()
+            date.title = title
+          })
+          setEvents(data)
+        }
       })
       .catch((error) => console.log(error.response.data.message))
-  })
+  }, [events])
 
   useEffect(() => {
     axios
@@ -198,7 +206,7 @@ function ViewFacility({ facility, user }) {
             {response.success}
           </CAlert>
         )}
-        <CCard style={{ width: '100%' }}>
+        <CCard style={{ width: '800px' }}>
           {images.length === 0 ? (
             <div className="d-flex justify-content-center my-5">
               <CSpinner color="primary" />
@@ -218,21 +226,6 @@ function ViewFacility({ facility, user }) {
               })}
             </CCarousel>
           )}
-          {/* <Suspense fallback={<CSpinner color="primary" />}>
-            <CCarousel controls light indicators interval={10000}>
-              {images.map((file) => {
-                return (
-                  <CCarouselItem key={file._id}>
-                    <CImage
-                      className="d-block w-100"
-                      src={`data:${file.contentType};base64,${getFileData(file.data.data)}`}
-                      alt=""
-                    />
-                  </CCarouselItem>
-                )
-              })}
-            </CCarousel>
-          </Suspense> */}
           <CCardBody>
             <CCardTitle>{facility.name}</CCardTitle>
           </CCardBody>

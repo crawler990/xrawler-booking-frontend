@@ -26,14 +26,11 @@ function Search({ values, results }) {
     <div className="d-flex justify-content-center mb-3">
       <input
         type="text"
-        className="form-control mx-4"
-        style={{ width: '350px' }}
+        className="form-control"
+        style={{ width: '350px', marginRight: '100px' }}
         value={param}
         onChange={handleInputChange}
       />
-      <CButton>
-        <CIcon icon={cilLocationPin} className="mx-1" /> Find Facility
-      </CButton>
     </div>
   )
 }

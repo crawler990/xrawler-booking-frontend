@@ -52,7 +52,7 @@ function Bookings() {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {bookings.length > 0 &&
+            {bookings.length > 0 ? (
               bookings.map((booking) => {
                 return (
                   <CTableRow key={booking._id}>
@@ -72,17 +72,14 @@ function Bookings() {
                     <CTableDataCell>
                       <strong>{booking.subTotal}</strong>
                     </CTableDataCell>
-                    {/* <CTableDataCell>
-                      <CIcon
-                        icon={cilTrash}
-                        size="lg"
-                        style={{ cursor: 'pointer' }}
-                        // onClick={handleDelete(booking._id)}
-                      />
-                    </CTableDataCell> */}
                   </CTableRow>
                 )
-              })}
+              })
+            ) : (
+              <CTableRow className="d-flex justify-start">
+                <h5>No Bookings Available</h5>
+              </CTableRow>
+            )}
           </CTableBody>
         </CTable>
       </CCard>

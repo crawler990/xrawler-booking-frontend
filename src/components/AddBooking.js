@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { CAlert } from '@coreui/react'
+import { CAlert, CButton } from '@coreui/react'
 import axios from 'axios'
 import { backendURL } from '../app.constants'
 import AuthService from 'src/services/AuthService'
 import Search from './Search'
 import AllFacilities from './AllFacilities'
+import CIcon from '@coreui/icons-react'
+import { cilArrowLeft, cilBackspace } from '@coreui/icons'
 
 function AddBooking({ booking }) {
   const [formData, setFormData] = useState({
@@ -17,7 +19,6 @@ function AddBooking({ booking }) {
   const [filteredFacilities, setFilteredFacilities] = useState([])
   const [validated, setValidated] = useState(false)
   const [response, setResponse] = useState({ success: '', error: '' })
-  const [startDate, setStartDate] = useState(new Date())
   const [search, setSearch] = useState(true)
   const options = AuthService.setHeaders()
 
@@ -52,7 +53,19 @@ function AddBooking({ booking }) {
         </CAlert>
       )}
 
-      <h2 className="mb-3"> {booking ? 'Edit' : 'New'} booking</h2>
+      <div className="d-flex">
+        <h3 className="mb-3"> {booking ? 'Edit' : 'New'} booking</h3>
+        {/* {!search && (
+          <CButton
+            style={{ width: '80px', height: '35px', marginLeft: '600px' }}
+            onClick={() => {
+              setSearch((search) => !search)
+            }}
+          >
+            <CIcon icon={cilArrowLeft} />
+          </CButton>
+        )} */}
+      </div>
       {search && <Search values={facilities} results={handleResults} />}
       <AllFacilities
         facilities={facilities}

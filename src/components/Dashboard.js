@@ -94,7 +94,7 @@ const Dashboard = () => {
                     {
                       label: 'Bookings',
                       backgroundColor: '#f87979',
-                      data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
+                      data: [0, 0, 5, 12, 10, 40, 9, 0, 0],
                     },
                   ],
                 }}
@@ -128,7 +128,7 @@ const Dashboard = () => {
                     {
                       label: 'Payments',
                       backgroundColor: '#f87979',
-                      data: [40, 20, 12, 39, 10, 40, 39, 80, 40],
+                      data: [0, 0, 5, 12, 10, 40, 9, 0, 0],
                     },
                   ],
                 }}

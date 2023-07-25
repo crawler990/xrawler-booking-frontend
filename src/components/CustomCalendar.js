@@ -13,6 +13,7 @@ function CustomCalendar({ calendarData, clearCalendar, resetCalendar, events }) 
     const selectedSlot = { start, end }
     if (
       !selectedSlots.find((x) => moment(x.start).isSame(selectedSlot.start)) &&
+      moment(new Date()).isBefore(selectedSlot.start) &&
       !events.find((x) => moment(x.start).isSame(selectedSlot.start))
     ) {
       setSelectedSlots((prevSelectedSlots) => [...prevSelectedSlots, selectedSlot])
@@ -36,6 +37,12 @@ function CustomCalendar({ calendarData, clearCalendar, resetCalendar, events }) 
     return {}
   }
 
+  const eventPropGetter = () => {
+    return {
+      style: { backgroundColor: '#198754' },
+    }
+  }
+
   useEffect(() => {
     calendarData(selectedSlots)
   }, [selectedSlots])
@@ -49,7 +56,7 @@ function CustomCalendar({ calendarData, clearCalendar, resetCalendar, events }) 
     <div>
       <Calendar
         localizer={localizer}
-        events={myEventsList}
+        events={events}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500, width: 900, cursor: 'pointer' }}
@@ -58,6 +65,7 @@ function CustomCalendar({ calendarData, clearCalendar, resetCalendar, events }) 
         selectable={true}
         onSelectSlot={handleSelectSlot}
         slotPropGetter={slotPropGetter}
+        eventPropGetter={eventPropGetter}
         timeslots={1}
         step={60}
       />
